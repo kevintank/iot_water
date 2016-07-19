@@ -45,7 +45,7 @@ void setup() {
     //or use this for auto generated name ESP + ChipID
    // wifiManager.autoConnect();
 
-  if (!wifiManager.autoConnect("kevin", "arami2005")) {
+  if (!wifiManager.autoConnect("kevin", "")) {
     Serial.println("failed to connect, we should reset as see if it connects");
     delay(3000);
     ESP.reset();
