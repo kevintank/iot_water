@@ -13,7 +13,7 @@ WiFiClient client;
 char data[1500];
 int ind = 0;
 int type;
-short int data_size;
+short int data_size ; //data size
 
 #define serialWaitChars(n) while(Serial.available() < n){delay(10);}
 
