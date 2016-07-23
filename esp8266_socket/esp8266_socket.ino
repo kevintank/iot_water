@@ -88,7 +88,7 @@ void loop() {
        
        data_size =  ((data[1] << 8) & 0xff00 ) + (data[0] & 0x00ff);
 
-     
+       //여기서 on off를 감지한다.
        Serial.println("result:");
        Serial.println(data_size);
        Serial.print("\n");
