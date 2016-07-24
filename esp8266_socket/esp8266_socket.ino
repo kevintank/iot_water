@@ -14,6 +14,7 @@ char data[1500];
 int ind = 0;
 int type;
 short int data_size ; //data size
+const int led_pin = 2;
 
 #define serialWaitChars(n) while(Serial.available() < n){delay(10);}
 
@@ -95,8 +96,12 @@ void loop() {
        
        Serial.println("type:");
        Serial.println(data[2]);
-       Serial.print("\n");
 
+
+       if(data[2] == 'w')
+          
+       Serial.print("\n");
+  
         Serial.println("cmd:");
        Serial.println(data[3]);
        Serial.print("\n");
