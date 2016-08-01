@@ -1,6 +1,4 @@
-#include <FS.h>
-
-#include <ESP8266WiFi.h>           
+#include <ESP8266WiFi.h>
 
 //needed for library
 #include <DNSServer.h>
@@ -22,11 +20,16 @@ void setup() {
     // put your setup code here, to run once:
     Serial.begin(115200);
 
+    pinMode(led_pin, OUTPUT);
+    digitalWrite(led_pin, HIGH);   //on 
+    
     //WiFiManager
     //Local intialization. Once its business is done, there is no need to keep it around
     WiFiManager wifiManager;
     //reset saved settings
     //wifiManager.resetSettings();
+
+    wifiManager.setTimeout(180);
     
     //set custom ip for portal
   //  wifiManager.setAPConfig(IPAddress(192,168,0,55), IPAddress(192,168,0,1), IPAddress(255,255,255,0));
@@ -46,7 +49,7 @@ void setup() {
     //or use this for auto generated name ESP + ChipID
    // wifiManager.autoConnect();
 
-  if (!wifiManager.autoConnect("kevin", "")) {
+  if (!wifiManager.autoConnect("kevin", "arami2005")) {
     Serial.println("failed to connect, we should reset as see if it connects");
     delay(3000);
     ESP.reset();
@@ -75,9 +78,22 @@ void loop() {
   {
     //try to connect to a new client
     client = server.available();
+    if(!client){
+      return;
+    }
   }
   else
   {
+
+   unsigned long timeout = millis();
+  while (client.available() == 0) {
+    if (millis() - timeout > 5000) {
+      Serial.println(">>> Client Timeout !");
+      client.stop();
+      return;
+    }
+  }
+  
     if(client.available() > 0)
     { 
       while(client.available())
@@ -86,33 +102,45 @@ void loop() {
         ind++;
       } 
       client.flush();
+      
+     // if(data[1] != NULL && data[0] !=NULL)
+     //    { 
+         data_size =  ((data[1] << 8) & 0xff00 ) + (data[0] & 0x00ff);
        
-       data_size =  ((data[1] << 8) & 0xff00 ) + (data[0] & 0x00ff);
-
-       //여기서 on off를 감지한다.
-       Serial.println("result:");
-       Serial.println(data_size);
-       Serial.print("\n");
+        //여기서 on off를 감지한다.
+         //Serial.println("result:");
+        // Serial.println(data_size);
+         //Serial.print("\n");
        
-       Serial.println("type:");
-       Serial.println(data[2]);
-
-
-       if(data[2] == 'w')
-          
-       Serial.print("\n");
-  
-        Serial.println("cmd:");
-       Serial.println(data[3]);
-       Serial.print("\n");
+         //Serial.println("type:");
+        // Serial.println(data[2]);
        
-      for(int j=0;j < ind; j++)
-     {
-       Serial.print(data[j]);
-     }
+       if(data[2] == 'w'){
+             if(data[3] == 'o'){
+                   digitalWrite(led_pin, HIGH);   //on 
+                    Serial.print("on");
+                    Serial.print("\n");
+             }else if(data[3] == 'f'){
+                    digitalWrite(led_pin, LOW);  //off
+                    Serial.print("off");
+                    Serial.print("\n");
+             }else if(data[3]== 's'){
+                                                 //get status
+             }else if(data[3] == 't'){
+
+                                                //get 습도
+             }
+       }
+       
+     // }
+
+   //   for(int j=0;j < ind; j++)
+    // {
+     //  Serial.print(data[j]);
+    // }
       ind = 0;
       client.print("OK!");    //send ascii code  
-    }
+    }//end if
 
-  }
-} 
+  } //if 
+}  //end loop
