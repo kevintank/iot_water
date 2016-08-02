@@ -86,13 +86,13 @@ void loop() {
   {
 
    unsigned long timeout = millis();
-  while (client.available() == 0) {
-    if (millis() - timeout > 5000) {
-      Serial.println(">>> Client Timeout !");
-      client.stop();
-      return;
-    }
-  }
+  //while (client.available() == 0) {
+  ///  if (millis() - timeout > 5000) {
+    //  Serial.println(">>> Client Timeout !");
+  //    client.stop();
+    //  return;
+  //  }
+ // }
   
     if(client.available() > 0)
     { 
