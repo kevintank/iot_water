@@ -5,17 +5,15 @@
 #include <ESP8266WebServer.h>
 #include <WiFiManager.h>       
 
-WiFiServer server(4998);
+WiFiServer server(4998);  //서버의 포트
 WiFiClient client;
 
-char data[1500];
+char data[1500];  //버퍼
 int ind = 0;
 int type;
-short int data_size ; //data size
-const int led_pin = 2;
-
-#define serialWaitChars(n) while(Serial.available() < n){delay(10);}
-
+short int data_size ;   //data size
+const int led_pin = 2; //출력핀 선언
+ 
 void setup() {
     // put your setup code here, to run once:
     Serial.begin(115200);
@@ -33,22 +31,16 @@ void setup() {
     
     //set custom ip for portal
   //  wifiManager.setAPConfig(IPAddress(192,168,0,55), IPAddress(192,168,0,1), IPAddress(255,255,255,0));
+  
   //고정 아이피 지정
-
   IPAddress _ip = IPAddress(192,168,0,55);
   IPAddress _gw = IPAddress(192,168,0,1);
   IPAddress _sn = IPAddress(255, 255, 255, 0);
-  
-  wifiManager.setSTAStaticIPConfig(_ip, _gw, _sn);
-  
-    //fetches ssid and pass from eeprom and tries to connect
-    //if it does not connect it starts an access point with the specified name
-    //here  "AutoConnectAP"
-    //and goes into a blocking loop awaiting configuration
-    //wifiManager.autoConnect("AutoConnectAP");
-    //or use this for auto generated name ESP + ChipID
-   // wifiManager.autoConnect();
 
+  //아이피 셋팅
+  wifiManager.setSTAStaticIPConfig(_ip, _gw, _sn);
+
+ //공유기에 접속
   if (!wifiManager.autoConnect("kevin", "arami2005")) {
     Serial.println("failed to connect, we should reset as see if it connects");
     delay(3000);
@@ -56,20 +48,21 @@ void setup() {
     delay(5000);
   }
 
+  
   //if you get here you have connected to the WiFi
   Serial.println("connected...yeey :)");
 
-
+ //ip확인용
   Serial.println("local ip");
   Serial.println(WiFi.localIP());
-  
-    
-    //if you get here you have connected to the WiFi
-    Serial.println("Connection established");
+ 
+ //if you get here you have connected to the WiFi
+ Serial.println("Connection established");
 
-    server.begin();
-    Serial.println("Server started");
-    Serial.setDebugOutput(true);
+//서버 시작
+ server.begin();
+ Serial.println("Server started");
+ Serial.setDebugOutput(true);
 }
 
 void loop() {
@@ -85,7 +78,8 @@ void loop() {
   else
   {
 
-   unsigned long timeout = millis();
+  //밀리초 구하기
+  unsigned long timeout = millis();
   //while (client.available() == 0) {
   ///  if (millis() - timeout > 5000) {
     //  Serial.println(">>> Client Timeout !");
@@ -96,26 +90,19 @@ void loop() {
   
     if(client.available() > 0)
     { 
+      //입력 데이타 취득
       while(client.available())
       {
          data[ind] = client.read();
-        ind++;
+        ind++;  // 입력받은 바이트수
       } 
       client.flush();
       
-     // if(data[1] != NULL && data[0] !=NULL)
-     //    { 
-         data_size =  ((data[1] << 8) & 0xff00 ) + (data[0] & 0x00ff);
-       
-        //여기서 on off를 감지한다.
-         //Serial.println("result:");
-        // Serial.println(data_size);
-         //Serial.print("\n");
-       
-         //Serial.println("type:");
-        // Serial.println(data[2]);
-       
-       if(data[2] == 'w'){
+     // 클라이언트에서 보낸 정수값 체크 하기
+     data_size =  ((data[1] << 8) & 0xff00 ) + (data[0] & 0x00ff);
+
+       //물관련 명령
+       if(data[2] == 'w'){ 
              if(data[3] == 'o'){
                    digitalWrite(led_pin, HIGH);   //on 
                     Serial.print("on");
@@ -131,16 +118,12 @@ void loop() {
                                                 //get 습도
              }
        }
-       
-     // }
-
-   //   for(int j=0;j < ind; j++)
-    // {
-     //  Serial.print(data[j]);
-    // }
+      
       ind = 0;
-      client.print("OK!");    //send ascii code  
-    }//end if
 
-  } //if 
+      //클라이언트에 문자 전송
+      client.print("OK!");    //send ascii code  
+    }
+
+  }  
 }  //end loop
