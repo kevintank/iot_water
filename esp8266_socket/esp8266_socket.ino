@@ -13,6 +13,7 @@ int ind = 0;
 int type;
 short int data_size ;   //data size
 const int led_pin = 2; //출력핀 선언
+const int water = 0    //수분 센서 
  
 void setup() {
     // put your setup code here, to run once:
