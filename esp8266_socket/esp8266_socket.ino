@@ -42,7 +42,7 @@ void setup() {
   wifiManager.setSTAStaticIPConfig(_ip, _gw, _sn);
 
  //공유기에 접속
-  if (!wifiManager.autoConnect("kevin", "arami2005")) {
+  if (!wifiManager.autoConnect("kevin", "")) {
     Serial.println("failed to connect, we should reset as see if it connects");
     delay(3000);
     ESP.reset();
